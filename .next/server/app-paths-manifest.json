@@ -1,0 +1,5 @@
+{
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/afiliado/cadastro/page": "app/afiliado/cadastro/page.js"
+}

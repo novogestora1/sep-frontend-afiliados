@@ -1,0 +1,65 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-inter: "Inter", "sans-serif";
+}
+
+.stepline {
+  @apply h-[3px] max-w-[88px] w-full min-w-11 rounded-[40px];
+}
+
+.steptext {
+  @apply text-[16px] sm:text-[20px] lg:text-[24px] font-medium leading-[158%];
+}
+
+.stepdesc {
+  @apply text-[13px] lg:text-[15px] whitespace-nowrap font-medium leading-[146%] max-md:hidden;
+}
+
+.commonlabel {
+  @apply absolute -top-2.5 sm:-top-3 left-3 bg-white text-[#2E263D]/70 px-[4px] max-sm:text-[13px];
+}
+
+.scrollbar_hide::-webkit-scrollbar {
+  @apply hidden;
+}
+
+input {
+  @apply outline-none
+}
+
+/* Hide number input arrows in all browsers */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+button {
+  @apply cursor-pointer
+}
+
+/* Hide calendar icon and disable native calendar popup globally */
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  position: relative;
+}
+
+/* Remove the calendar dropdown in WebKit browsers (e.g., Chrome, Safari) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Optional: prevent calendar popup on focus (e.g., on iOS/Safari) */
+input[type="date"]:focus {
+  pointer-events: none;
+}
