@@ -14,7 +14,7 @@ const Page = () => {
         <div className="flex flex-col items-center mt-5 sm:mt-16  lg:mt-[110px]">
           <CommonHeading heading="Parabéns, seu cadastro esta completo!" />
           <Image
-            src="/images/png/member_confirm.png"
+            src="/afiliado/images/png/member_confirm.png"
             height={446}
             width={766}
             alt="confirm img"
