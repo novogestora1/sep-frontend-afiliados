@@ -1,7 +1,7 @@
 // src/components/affiliate/AfiliadoForm.tsx
 "use client";
 import React, { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import CommonInputs from "@/components/common/CommonInputs";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -42,20 +42,26 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
   const router = useRouter();
   const password = watch("password");
   const cpf = watch("cpf");
-  // --- NOVO: Observa os campos que serão preenchidos automaticamente ---
+
+  // ✅ basePath público para montar /afiliado/api/...
+  // Crie na Vercel (projeto Afiliado): NEXT_PUBLIC_BASE_PATH = /afiliado
+  const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+  // Para bloquear edição quando vier do CPF
   const firstNameValue = watch("firstName");
   const surnameValue = watch("surname");
   const dateOfBirthValue = watch("dateOfBirth");
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // --- Lógica para buscar dados do CPF ---
+  // --- Buscar dados do CPF ---
   useEffect(() => {
     const fetchCpfData = async () => {
       const rawCpf = cpf?.replace(/\D/g, "");
       if (rawCpf && rawCpf.length === 11) {
         try {
-          const requestUrl = `/api/bff/${rawCpf}`;
+          // ✅ agora vai para /afiliado/api/bff/{cpf} (em prod)
+          const requestUrl = `${BASE}/api/bff/${rawCpf}`;
           const response = await axios.get(requestUrl);
           const dataFromBFF = response.data;
 
@@ -66,14 +72,12 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
             setError("cpf", { type: "manual", message: undefined });
           } else {
             const errorMessage = dataFromBFF.message || "CPF não encontrado ou inválido.";
-            console.warn("Nenhum dado encontrado para este CPF ou erro na resposta:", dataFromBFF);
             setValue("firstName", "", { shouldValidate: true });
             setValue("surname", "", { shouldValidate: true });
             setValue("dateOfBirth", "", { shouldValidate: true });
             setError("cpf", { type: "manual", message: errorMessage });
           }
         } catch (error: any) {
-          console.error("Erro ao buscar dados do CPF:", error);
           if (error.response) {
             setError("cpf", { type: "manual", message: error.response.data.message || "Erro ao consultar CPF." });
           } else {
@@ -96,11 +100,9 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
       }
     };
 
-    const timeoutId = setTimeout(() => {
-        fetchCpfData();
-    }, 500);
-
+    const timeoutId = setTimeout(fetchCpfData, 500);
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cpf, setValue, setError]);
 
   useEffect(() => {
@@ -125,16 +127,12 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
         data_nascimento: data.dateOfBirth,
       };
 
-      // 🚨 CORREÇÃO AQUI: O caminho da requisição POST para o seu BFF
-      const response = await axios.post("/api/bff/cadastro-afiliado", payloadToBackend);
+      // ✅ POST agora com basePath
+      await axios.post(`${BASE}/api/bff/cadastro-afiliado`, payloadToBackend);
 
-      if (response.status === 200 || response.status === 201) {
-        router.push("/afiliado/cadastro/confirmacao");
-      } else {
-        alert(`Cadastro falhou com status: ${response.status}. Mensagem: ${response.data.message || 'N/A'}`);
-      }
+      // ✅ navegação interna não precisa repetir /afiliado (basePath cuida disso)
+      router.push("/cadastro/confirmacao");
     } catch (error: any) {
-      console.error("Erro ao enviar formulário:", error);
       if (error.response) {
         alert(error.response.data.message || "Erro desconhecido do servidor.");
       } else if (error.request) {
@@ -196,18 +194,15 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
               if (value.length > 8) value = value.slice(0, 8);
 
               if (value.length > 4) {
-                value = `${value.slice(0, 2)}/${value.slice(
-                  2,
-                  4
-                )}/${value.slice(4)}`;
+                value = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
               } else if (value.length > 2) {
                 value = `${value.slice(0, 2)}/${value.slice(2)}`;
               }
               setValue("dateOfBirth", value, { shouldValidate: true });
             },
           })}
-          error={(touchedFields.dateOfBirth || isSubmitted) ? errors.dateOfBirth?.message as string : undefined}
-          readOnly={!!dateOfBirthValue} // <-- NOVO: Torna o campo readOnly se tiver valor
+          error={(touchedFields.dateOfBirth || isSubmitted) ? (errors.dateOfBirth?.message as string) : undefined}
+          readOnly={!!dateOfBirthValue}
         />
         <CommonInputs
           label="Nome"
@@ -215,17 +210,11 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
           placeholder="Seu nome"
           {...register("firstName", {
             required: "Nome é obrigatório",
-            minLength: {
-              value: 2,
-              message: "Nome deve ter no mínimo 2 caracteres",
-            },
-            maxLength: {
-              value: 100,
-              message: "Nome deve ter no máximo 100 caracteres",
-            },
+            minLength: { value: 2, message: "Nome deve ter no mínimo 2 caracteres" },
+            maxLength: { value: 100, message: "Nome deve ter no máximo 100 caracteres" },
           })}
-          error={(touchedFields.firstName || isSubmitted) ? errors.firstName?.message as string : undefined}
-          readOnly={!!firstNameValue} // <-- NOVO: Torna o campo readOnly se tiver valor
+          error={(touchedFields.firstName || isSubmitted) ? (errors.firstName?.message as string) : undefined}
+          readOnly={!!firstNameValue}
         />
         <CommonInputs
           label="Sobrenome"
@@ -233,17 +222,11 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
           placeholder="Seu sobrenome"
           {...register("surname", {
             required: "Sobrenome é obrigatório",
-            minLength: {
-              value: 2,
-              message: "Sobrenome deve ter no mínimo 2 caracteres",
-            },
-            maxLength: {
-              value: 155,
-              message: "Sobrenome deve ter no máximo 155 caracteres",
-            },
+            minLength: { value: 2, message: "Sobrenome deve ter no mínimo 2 caracteres" },
+            maxLength: { value: 155, message: "Sobrenome deve ter no máximo 155 caracteres" },
           })}
-          error={(touchedFields.surname || isSubmitted) ? errors.surname?.message as string : undefined}
-          readOnly={!!surnameValue} // <-- NOVO: Torna o campo readOnly se tiver valor
+          error={(touchedFields.surname || isSubmitted) ? (errors.surname?.message as string) : undefined}
+          readOnly={!!surnameValue}
         />
       </div>
 
@@ -303,7 +286,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
               message: "Username deve conter apenas letras minúsculas, números, '.' e '-'. Sem espaços.",
             },
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                e.target.value = e.target.value.toLowerCase();
+              e.target.value = e.target.value.toLowerCase();
             }
           })}
           error={errors.username?.message as string}
@@ -318,10 +301,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
           placeholder="********"
           {...register("password", {
             required: "Senha é obrigatória",
-            minLength: {
-              value: 8,
-              message: "Senha deve ter no mínimo 8 caracteres",
-            },
+            minLength: { value: 8, message: "Senha deve ter no mínimo 8 caracteres" },
             pattern: {
               value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;<>,.?/~`-])[A-Za-z\d!@#$%^&*()_+={}\[\]:;<>,.?/~`-]{8,}$/,
               message: "Senha: 8+ caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 especial.",
@@ -335,8 +315,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
           placeholder="********"
           {...register("confirmPassword", {
             required: "Confirmação de senha é obrigatória",
-            validate: (value) =>
-              value === password || "As senhas não coincidem",
+            validate: (value) => value === password || "As senhas não coincidem",
           })}
           error={errors.confirmPassword?.message as string}
         />
@@ -348,9 +327,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
           className="mr-2"
           {...register("terms", { required: "Você deve aceitar os termos e condições" })}
         />
-        <label className="text-sm text-gray-700">
-          Aceito e concordo com os termos
-        </label>
+        <label className="text-sm text-gray-700">Aceito e concordo com os termos</label>
         {errors.terms && <p className="text-red-500 text-xs italic">{errors.terms.message as string}</p>}
       </div>
 
