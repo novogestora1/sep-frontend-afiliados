@@ -247,7 +247,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
         />
       </div>
 
-      <h2 className="text-[#344054] text-[22px] font-medium mt-6">Contacts</h2>
+      <h2 className="text-[#344054] text-[22px] font-medium mt-6">Contatos</h2>
       <div className="grid sm:grid-cols-2 mt-4 gap-5 md:gap-[34px]">
         <CommonInputs
           label="Email"
