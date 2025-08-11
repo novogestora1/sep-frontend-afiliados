@@ -126,7 +126,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
       };
 
       // 🚨 CORREÇÃO AQUI: O caminho da requisição POST para o seu BFF
-      const response = await axios.post("/api/bff/teste-cadastro", payloadToBackend);
+      const response = await axios.post("/api/bff/cadastro-afiliado", payloadToBackend);
 
       if (response.status === 200 || response.status === 201) {
         router.push("/afiliado/cadastro/confirmacao");
