@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  basePath: "/afiliado", // este app vai rodar dentro de /afiliado
 };
 
 export default nextConfig;
