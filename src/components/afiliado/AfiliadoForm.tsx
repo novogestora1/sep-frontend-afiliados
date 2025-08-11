@@ -55,7 +55,7 @@ const AffiliateForm: React.FC<AffiliateFormProps> = ({
       const rawCpf = cpf?.replace(/\D/g, "");
       if (rawCpf && rawCpf.length === 11) {
         try {
-          const requestUrl = `/api/bff/cpf/${rawCpf}`;
+          const requestUrl = `/api/bff/${rawCpf}`;
           const response = await axios.get(requestUrl);
           const dataFromBFF = response.data;
 

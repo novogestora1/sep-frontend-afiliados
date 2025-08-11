@@ -1,4 +1,4 @@
-// src/pages/api/bff/cpf/[cpf].ts
+// src/pages/api/bff/[cpf].ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const HUB_DEVELOPER_API_TOKEN = process.env.HUB_DEVELOPER_API_TOKEN;
