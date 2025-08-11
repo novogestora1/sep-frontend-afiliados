@@ -1,6 +1,5 @@
 import CommonHeading from "@/components/common/CommonHeading";
 import { Logo } from "@/components/common/Icons";
-import CheckoutPayment from "@/components/cadastro/passo4/CheckoutPayment";
 import React from "react";
 import CommonstepLine from "@/components/common/CommonstepLine";
 import Image from "next/image";
